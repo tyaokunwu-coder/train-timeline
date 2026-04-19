@@ -9,293 +9,165 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+JP:wght@400;700;900&display=swap');
 
-/* ── テーマ変数 ───────────────────────────────── */
 :root {
-  --bg:        #ffffff;
-  --bg2:       #fafafa;
-  --border:    #e8e8e8;
-  --text:      #111111;
-  --text-mid:  #888888;
-  --text-dim:  #bbbbbb;
-  --next-bg:   #f4f8ff;
-  --next-bar:  #1a6bff;
-  --btn-bg:    #ffffff;
-  --btn-act:   #f0f5ff;
-  --btn-bdr:   #e0e0e0;
-  --btn-abdr:  #1a6bff;
-  --status-ok-bg:   #f0faf4;
-  --status-ok-txt:  #1a7a40;
-  --status-err-bg:  #fff0f0;
-  --status-err-txt: #cc2020;
-  --status-idle-bg: #f5f5f5;
-  --status-idle-txt:#999999;
+  --bg:#ffffff; --bg2:#fafafa; --border:#e8e8e8;
+  --text:#111; --text-mid:#888; --text-dim:#bbb;
+  --next-bg:#f4f8ff; --bar:#1a6bff;
+  --btn-bg:#fff; --btn-act:#f0f5ff; --btn-bdr:#e0e0e0; --btn-abdr:#1a6bff;
+  --sok-bg:#f0faf4; --sok:#1a7a40;
+  --serr-bg:#fff0f0; --serr:#cc2020;
+  --sidle-bg:#f5f5f5; --sidle:#999;
 }
 [data-theme="dark"] {
-  --bg:        #0a0d14;
-  --bg2:       #0d1120;
-  --border:    #1e2a3a;
-  --text:      #e4eeff;
-  --text-mid:  #6a8aaa;
-  --text-dim:  #2a3a50;
-  --next-bg:   #0e1628;
-  --next-bar:  #2a7aff;
-  --btn-bg:    #0d1120;
-  --btn-act:   #0e1e3a;
-  --btn-bdr:   #1e2a3a;
-  --btn-abdr:  #2a7aff;
-  --status-ok-bg:   #071510;
-  --status-ok-txt:  #40d870;
-  --status-err-bg:  #180808;
-  --status-err-txt: #ff6060;
-  --status-idle-bg: #0d1120;
-  --status-idle-txt:#445566;
+  --bg:#0a0d14; --bg2:#0d1120; --border:#1e2a3a;
+  --text:#e4eeff; --text-mid:#6a8aaa; --text-dim:#2a3a50;
+  --next-bg:#0e1628; --bar:#2a7aff;
+  --btn-bg:#0d1120; --btn-act:#0e1e3a; --btn-bdr:#1e2a3a; --btn-abdr:#2a7aff;
+  --sok-bg:#071510; --sok:#40d870;
+  --serr-bg:#180808; --serr:#ff6060;
+  --sidle-bg:#0d1120; --sidle:#445566;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-
-html, body {
-  width:100%; height:100%;
-  background: var(--bg);
-  font-family: 'Noto Sans JP', sans-serif;
-  overflow: hidden;
-  color: var(--text);
-  transition: background 0.3s, color 0.3s;
-}
+html, body { width:100%; height:100%; background:var(--bg); font-family:'Noto Sans JP',sans-serif; overflow:hidden; color:var(--text); transition:background .3s,color .3s; }
 
 .app {
-  width:100%; height:100%;
-  display:flex; flex-direction:column;
-  padding: env(safe-area-inset-top,0) env(safe-area-inset-right,0)
-           env(safe-area-inset-bottom,0) env(safe-area-inset-left,0);
+  width:100%; height:100%; display:flex; flex-direction:column;
+  padding:env(safe-area-inset-top,0) env(safe-area-inset-right,0) env(safe-area-inset-bottom,0) env(safe-area-inset-left,0);
 }
 
-/* ── STATUS BAR ───────────────────────────────── */
-.status-bar {
-  flex-shrink:0;
-  display:flex; align-items:center; gap:8px;
-  padding: 7px 16px;
-  border-bottom: 1px solid var(--border);
-  min-height: 36px;
-  transition: background 0.4s;
-}
-.status-bar.ok    { background: var(--status-ok-bg); }
-.status-bar.delay { background: var(--status-err-bg); animation: flash-s 2s ease-in-out infinite; }
-.status-bar.idle  { background: var(--status-idle-bg); }
-@keyframes flash-s { 0%,100%{opacity:1} 50%{opacity:0.7} }
+/* STATUS */
+.sbar { flex-shrink:0; display:flex; align-items:center; gap:8px; padding:7px 16px; min-height:36px; border-bottom:1px solid var(--border); transition:background .4s; }
+.sbar.ok    { background:var(--sok-bg); }
+.sbar.delay { background:var(--serr-bg); animation:flash 2s ease-in-out infinite; }
+.sbar.idle  { background:var(--sidle-bg); }
+@keyframes flash { 0%,100%{opacity:1} 50%{opacity:.7} }
+.sdot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.ok   .sdot { background:var(--sok); }
+.delay .sdot { background:var(--serr); animation:blink 1s ease-in-out infinite; }
+.idle .sdot  { background:var(--sidle); }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.15} }
+.stxt { flex:1; font-size:12px; letter-spacing:.04em; }
+.ok   .stxt { color:var(--sok); }
+.delay .stxt { color:var(--serr); font-weight:700; }
+.idle .stxt  { color:var(--sidle); }
+.stim { font-size:10px; color:var(--text-dim); white-space:nowrap; }
 
-.sdot {
-  width:8px; height:8px; border-radius:50%; flex-shrink:0;
-  transition: background 0.3s;
-}
-.ok    .sdot { background: var(--status-ok-txt); }
-.delay .sdot { background: var(--status-err-txt); animation: blink 1s ease-in-out infinite; }
-.idle  .sdot { background: var(--status-idle-txt); }
-@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.15} }
+/* CLOCK */
+.clock-wrap { flex-shrink:0; display:flex; align-items:center; justify-content:center; gap:20px; padding:12px 20px 10px; border-bottom:1px solid var(--border); }
+.clock-main { font-family:'Share Tech Mono',monospace; font-size:clamp(52px,12vw,88px); letter-spacing:.06em; line-height:1; }
+.csec { color:var(--text-dim); }
+.clock-meta { display:flex; flex-direction:column; gap:5px; }
+.cdate { font-size:12px; color:var(--text-mid); letter-spacing:.05em; }
+.theme-btn { background:var(--btn-bg); border:1px solid var(--btn-bdr); border-radius:20px; padding:5px 12px; font-size:12px; font-weight:700; color:var(--text-mid); cursor:pointer; }
 
-.stext {
-  flex:1; font-size:12px; letter-spacing:0.04em;
-  transition: color 0.3s;
-}
-.ok    .stext { color: var(--status-ok-txt); }
-.delay .stext { color: var(--status-err-txt); font-weight:700; }
-.idle  .stext { color: var(--status-idle-txt); }
-
-.stime { font-size:10px; color:var(--text-dim); white-space:nowrap; }
-
-/* ── CLOCK ────────────────────────────────────── */
-.clock-wrap {
-  flex-shrink:0;
-  display:flex; align-items:center; justify-content:center; gap:20px;
-  padding: 12px 20px 10px;
-  border-bottom: 1px solid var(--border);
-}
-.clock-main {
-  font-family:'Share Tech Mono',monospace;
-  font-size: clamp(52px, 12vw, 88px);
-  letter-spacing: 0.06em;
-  color: var(--text);
-  line-height:1;
-}
-.clock-sec { color: var(--text-dim); }
-.clock-meta {
-  display:flex; flex-direction:column; gap:4px;
-  align-items:flex-start;
-}
-.clock-date { font-size:12px; color:var(--text-mid); letter-spacing:0.05em; }
-
-/* テーマ切替ボタン */
-.theme-btn {
-  background: var(--btn-bg);
-  border: 1px solid var(--btn-bdr);
-  border-radius: 20px;
-  padding: 5px 12px;
-  font-size:12px; font-weight:700;
-  color: var(--text-mid);
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space:nowrap;
-}
-.theme-btn:active { opacity:0.7; }
-
-/* ── TRAIN ROWS — 3行固定でflex ─────────────────── */
+/* TRAIN LIST
+   핵심: 스크롤 가능하지만 각 행의 높이는 컨테이너 1/3로 고정 */
 .train-list {
   flex:1;
-  display:flex; flex-direction:column;
-  overflow:hidden;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  /* CSS custom property로 행 높이를 JS에서 설정 */
 }
+.train-list::-webkit-scrollbar { display:none; }
 
 .train-row {
-  flex:1;          /* 3行で均等に高さを分割 */
+  /* height는 JS で --row-h をセット */
+  height: var(--row-h, 33.333vh);
   display:flex; align-items:center;
-  padding: 0 24px;
-  gap:14px;
-  border-bottom: 1px solid var(--border);
-  background: var(--bg);
+  padding:0 24px; gap:14px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg);
   position:relative;
-  transition: background 0.4s;
-  overflow:hidden;
+  flex-shrink:0; /* スクロール時に縮まない */
 }
-.train-row:last-child { border-bottom:none; }
-.train-row.is-next { background: var(--next-bg); }
-.train-row.is-next::before {
-  content:'';
-  position:absolute; left:0; top:0; bottom:0; width:4px;
-  background: var(--next-bar);
-}
+.train-row.is-next { background:var(--next-bg); }
+.train-row.is-next::before { content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--bar); }
+.train-row.entering { animation:slideIn .3s ease-out; }
+@keyframes slideIn { from{transform:translateY(40px);opacity:0} to{transform:translateY(0);opacity:1} }
 
-/* 行が切り替わるアニメーション */
-.train-row.entering {
-  animation: slideIn 0.35s ease-out;
-}
-@keyframes slideIn {
-  from { transform:translateY(100%); opacity:0; }
-  to   { transform:translateY(0);    opacity:1; }
-}
-
-/* バッジ列 */
-.badge-col { width:76px; flex-shrink:0; display:flex; flex-direction:column; gap:5px; }
-.badge {
-  display:inline-flex; align-items:center; justify-content:center;
-  padding:4px 9px; border-radius:5px;
-  font-size:12px; font-weight:700; letter-spacing:0.05em; white-space:nowrap;
-}
+/* BADGE */
+.badge-col { width:76px; flex-shrink:0; display:flex; flex-direction:column; gap:6px; }
+.badge { display:inline-flex; align-items:center; justify-content:center; padding:4px 9px; border-radius:5px; font-size:12px; font-weight:700; letter-spacing:.05em; white-space:nowrap; }
 [data-theme="light"] .local   { background:#fff3e0; color:#e65c00; border:1px solid #ffd0a0; }
 [data-theme="light"] .rapid   { background:#e8f0ff; color:#1a4fd6; border:1px solid #b0c8ff; }
 [data-theme="light"] .tkinkai { background:#e8fff3; color:#0a7a3a; border:1px solid #90e0b0; }
 [data-theme="dark"]  .local   { background:rgba(255,140,0,.12); color:#ffaa40; border:1px solid rgba(255,140,0,.3); }
 [data-theme="dark"]  .rapid   { background:rgba(42,122,255,.15); color:#6aabff; border:1px solid rgba(42,122,255,.4); }
 [data-theme="dark"]  .tkinkai { background:rgba(0,200,100,.1);  color:#40d880; border:1px solid rgba(0,200,100,.3); }
+.seq { font-size:11px; color:var(--text-dim); font-family:'Share Tech Mono',monospace; }
+.is-next .seq { color:var(--bar); }
 
-.seq {
-  font-size:11px; color:var(--text-dim); letter-spacing:0.04em;
-  font-family:'Share Tech Mono',monospace;
-}
-.is-next .seq { color: var(--next-bar); }
+/* DEST */
+.dest-col { flex:1; display:flex; flex-direction:column; gap:3px; min-width:0; }
+.dest-ja { font-size:clamp(26px,5.5vw,44px); font-weight:900; line-height:1; letter-spacing:.02em; white-space:nowrap; }
+.dest-via { font-size:11px; color:var(--text-dim); }
 
-/* 行先 */
-.dest-col { flex:1; display:flex; flex-direction:column; gap:3px; }
-.dest-ja {
-  font-size: clamp(28px, 5.5vw, 46px);
-  font-weight:900; color:var(--text); line-height:1; letter-spacing:0.02em;
-}
-.dest-via { font-size:11px; color:var(--text-dim); letter-spacing:0.04em; }
+/* TIME + COUNTDOWN */
+.time-col { display:flex; flex-direction:column; align-items:flex-end; gap:5px; flex-shrink:0; }
+.dep-time { font-family:'Share Tech Mono',monospace; font-size:clamp(34px,6.5vw,54px); letter-spacing:.06em; line-height:1; }
+.is-next .dep-time { color:var(--bar); }
+.countdown { font-size:13px; font-family:'Share Tech Mono',monospace; padding:3px 12px; border-radius:20px; white-space:nowrap; font-weight:700; }
+[data-theme="light"] .cd-s { background:#fff0f0; color:#cc2020; border:1px solid #ffb0b0; }
+[data-theme="light"] .cd-n { background:#fffbee; color:#aa7700; border:1px solid #ffd060; }
+[data-theme="light"] .cd-o { background:#f0fff6; color:#1a7a40; border:1px solid #80e0a0; }
+[data-theme="dark"]  .cd-s { background:rgba(255,59,59,.12); color:#ff7070; border:1px solid rgba(255,59,59,.35); }
+[data-theme="dark"]  .cd-n { background:rgba(255,200,50,.08); color:#f5c842; border:1px solid rgba(255,200,50,.3); }
+[data-theme="dark"]  .cd-o { background:rgba(0,200,83,.08);  color:#40d880; border:1px solid rgba(0,200,83,.25); }
+.cd-s { animation:pls 1s ease-in-out infinite; }
+@keyframes pls { 0%,100%{opacity:1} 50%{opacity:.35} }
 
-/* 時刻・カウントダウン */
-.time-col { display:flex; flex-direction:column; align-items:flex-end; gap:6px; }
-.dep-time {
-  font-family:'Share Tech Mono',monospace;
-  font-size: clamp(36px, 7vw, 58px);
-  color:var(--text); letter-spacing:0.06em; line-height:1;
-  transition: color 0.3s;
-}
-.is-next .dep-time { color: var(--next-bar); }
-
-.countdown {
-  font-size:13px; font-family:'Share Tech Mono',monospace;
-  padding:3px 12px; border-radius:20px; white-space:nowrap;
-  font-weight:700;
-}
-[data-theme="light"] .cd-soon { background:#fff0f0; color:#cc2020; border:1px solid #ffb0b0; animation:pulse-cd 1s ease-in-out infinite; }
-[data-theme="light"] .cd-near { background:#fffbee; color:#aa7700; border:1px solid #ffd060; }
-[data-theme="light"] .cd-ok   { background:#f0fff6; color:#1a7a40; border:1px solid #80e0a0; }
-[data-theme="dark"]  .cd-soon { background:rgba(255,59,59,.12); color:#ff7070; border:1px solid rgba(255,59,59,.35); animation:pulse-cd 1s ease-in-out infinite; }
-[data-theme="dark"]  .cd-near { background:rgba(255,200,50,.08); color:#f5c842; border:1px solid rgba(255,200,50,.3); }
-[data-theme="dark"]  .cd-ok   { background:rgba(0,200,83,.08);  color:#40d880; border:1px solid rgba(0,200,83,.25); }
-@keyframes pulse-cd { 0%,100%{opacity:1} 50%{opacity:0.35} }
-
-/* ── DIR BUTTONS ──────────────────────────────── */
-.dir-section {
-  flex-shrink:0;
-  display:flex; gap:10px;
-  padding:10px 16px;
-  padding-bottom: max(10px, env(safe-area-inset-bottom));
-  border-top:1px solid var(--border);
-  background: var(--bg2);
-}
-.dir-btn {
-  flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:3px; padding:12px 10px; border-radius:12px;
-  border:2px solid var(--btn-bdr); background:var(--btn-bg); cursor:pointer;
-  transition:all 0.2s;
-}
+/* DIR BUTTONS */
+.dir-section { flex-shrink:0; display:flex; gap:10px; padding:10px 16px; padding-bottom:max(10px,env(safe-area-inset-bottom)); border-top:1px solid var(--border); background:var(--bg2); }
+.dir-btn { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:12px 10px; border-radius:12px; border:2px solid var(--btn-bdr); background:var(--btn-bg); cursor:pointer; transition:all .2s; }
 .dir-btn.active { border-color:var(--btn-abdr); background:var(--btn-act); }
-.dir-btn-arrow  { font-size:20px; color:var(--text-dim); transition:color 0.2s; }
-.dir-btn.active .dir-btn-arrow { color: var(--next-bar); }
-.dir-btn-label  { font-size:14px; font-weight:700; color:var(--text-mid); letter-spacing:0.03em; }
-.dir-btn.active .dir-btn-label { color: var(--text); }
-.dir-btn-sub    { font-size:10px; color:var(--text-dim); letter-spacing:0.03em; }
-.pill {
-  font-family:'Share Tech Mono',monospace; font-size:10px;
-  padding:2px 7px; border-radius:10px;
-  background:var(--bg2); color:var(--text-dim); border:1px solid var(--border);
-  transition:all 0.2s;
-}
-.dir-btn.active .pill { color:var(--next-bar); border-color:var(--btn-abdr); background:var(--btn-act); }
+.darrow { font-size:20px; color:var(--text-dim); }
+.dir-btn.active .darrow { color:var(--bar); }
+.dlabel { font-size:14px; font-weight:700; color:var(--text-mid); }
+.dir-btn.active .dlabel { color:var(--text); }
+.dsub { font-size:10px; color:var(--text-dim); }
+.pill { font-family:'Share Tech Mono',monospace; font-size:10px; padding:2px 7px; border-radius:10px; background:var(--bg2); color:var(--text-dim); border:1px solid var(--border); }
+.dir-btn.active .pill { color:var(--bar); border-color:var(--btn-abdr); }
 </style>
 </head>
 <body>
 <div class="app">
 
-  <!-- STATUS -->
-  <div class="status-bar idle" id="sbar">
+  <div class="sbar idle" id="sbar">
     <div class="sdot"></div>
-    <div class="stext" id="stxt">運行情報を取得中…</div>
-    <div class="stime" id="stim"></div>
+    <div class="stxt" id="stxt">運行情報取得中…</div>
+    <div class="stim" id="stim"></div>
   </div>
 
-  <!-- CLOCK -->
   <div class="clock-wrap">
-    <div class="clock-main">
-      <span id="chm">--:--</span><span class="clock-sec" id="cs">:--</span>
-    </div>
+    <div class="clock-main"><span id="chm">--:--</span><span class="csec" id="cs">:--</span></div>
     <div class="clock-meta">
-      <div class="clock-date" id="cdate">---</div>
-      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙 夜間</button>
+      <div class="cdate" id="cdate">---</div>
+      <button class="theme-btn" id="tbtn" onclick="toggleTheme()">🌙 夜間</button>
     </div>
   </div>
 
-  <!-- TRAINS: 常に3行 -->
-  <div class="train-list" id="trainList"></div>
+  <div class="train-list" id="tlist"></div>
 
-  <!-- DIR BUTTONS -->
   <div class="dir-section">
     <button class="dir-btn active" id="btnUp" onclick="setDir(0)">
-      <div class="dir-btn-arrow">↑</div>
-      <div class="dir-btn-label">大崎方向</div>
-      <div class="dir-btn-sub">池袋・川越・新宿</div>
+      <div class="darrow">↑</div>
+      <div class="dlabel">大崎方向</div>
+      <div class="dsub">池袋・川越・新宿</div>
       <div class="pill">乗り場 1</div>
     </button>
     <button class="dir-btn" id="btnDown" onclick="setDir(1)">
-      <div class="dir-btn-arrow">↓</div>
-      <div class="dir-btn-label">新木場方向</div>
-      <div class="dir-btn-sub">東京テレポート</div>
+      <div class="darrow">↓</div>
+      <div class="dlabel">新木場方向</div>
+      <div class="dsub">東京テレポート</div>
       <div class="pill">乗り場 2</div>
     </button>
   </div>
 
 </div>
 <script>
-// ── 時刻表データ ──────────────────────────────────────────────
 const UP_WD = [
   [5,25,'各停','大崎'],[5,52,'各停','川越'],
   [6,3,'各停','大崎'],[6,17,'各停','川越'],[6,22,'通快','大崎'],[6,33,'快速','川越'],[6,43,'各停','大宮'],[6,52,'各停','大崎'],
@@ -318,7 +190,7 @@ const UP_WD = [
   [23,10,'各停','大崎'],[23,28,'各停','大崎'],[23,36,'各停','大崎'],[23,50,'各停','大崎'],
   [24,7,'各停','大崎'],
 ];
-const DOWN_HD = [
+const DOWN_HD=[
   [5,45,'各停','新木場'],[6,10,'各停','新木場'],[6,22,'各停','新木場'],[6,33,'各停','新木場'],[6,41,'各停','新木場'],[6,53,'各停','新木場'],
   [7,4,'各停','新木場'],[7,12,'各停','新木場'],[7,17,'各停','新木場'],[7,23,'各停','新木場'],[7,31,'各停','新木場'],[7,40,'各停','新木場'],[7,49,'各停','新木場'],[7,54,'各停','新木場'],
   [8,1,'各停','新木場'],[8,7,'各停','新木場'],[8,14,'各停','新木場'],[8,22,'各停','新木場'],[8,30,'各停','新木場'],[8,36,'各停','新木場'],[8,44,'各停','新木場'],[8,50,'各停','新木場'],[8,59,'各停','新木場'],
@@ -338,69 +210,68 @@ const DOWN_HD = [
   [22,5,'各停','新木場'],[22,15,'各停','新木場'],[22,27,'各停','新木場'],[22,40,'各停','新木場'],[22,53,'各停','新木場'],
   [23,5,'各停','新木場'],[23,18,'各停','新木場'],[23,33,'各停','新木場'],[23,50,'各停','新木場'],
 ];
-const DOWN_WD = DOWN_HD;
+const DOWN_WD=DOWN_HD;
 
-const VIA = {
-  '大崎':'りんかい線内','川越':'大崎 → JR埼京線',
-  '大宮':'大崎 → JR埼京線','池袋':'大崎 → JR埼京線',
-  '武蔵浦和':'大崎 → JR埼京線','新木場':'りんかい線内',
-};
+const VIA={'大崎':'りんかい線内','川越':'大崎→JR埼京線','大宮':'大崎→JR埼京線','池袋':'大崎→JR埼京線','武蔵浦和':'大崎→JR埼京線','新木場':'りんかい線内'};
 
-// ── State ──────────────────────────────────────────────────────
-let dir = 0;
-let prevNextIdx = -1;  // 前の「次の列車」インデックスを記録
+let dir=0;
+function isWD(){const d=new Date().getDay();return d!==0&&d!==6;}
+function nowM(){const n=new Date();return n.getHours()*60+n.getMinutes();}
+function nowS(){const n=new Date();return n.getHours()*3600+n.getMinutes()*60+n.getSeconds();}
+function getTT(){return dir===0?UP_WD:(isWD()?DOWN_WD:DOWN_HD);}
 
-function isWD(){ const d=new Date().getDay(); return d!==0&&d!==6; }
-function nowM() { const n=new Date(); return n.getHours()*60+n.getMinutes(); }
-function getTT() { return dir===0 ? UP_WD : (isWD()?DOWN_WD:DOWN_HD); }
-
-function getUpcoming() {
-  const now = nowM();
-  const tt  = getTT();
-  const flat = tt.map(t=>({min:t[0]*60+t[1],h:t[0],m:t[1],type:t[2],dest:t[3]}));
-  // now以降の最初のインデックスを探す
-  let i = flat.findIndex(t => t.min >= now);
-  if(i < 0) i = 0; // 終電後は最初に戻る
-  // 3本取得（末尾を超えたら先頭に折り返し）
-  const result = [];
-  for(let k=0; k<3; k++){
-    const idx = (i+k) % flat.length;
-    result.push({...flat[idx], isNext: k===0});
-  }
-  return { trains: result, nextIdx: i };
+// 全便を秒単位で取得（倒計时に使う）
+function getFlat(){
+  return getTT().map(t=>({
+    min:t[0]*60+t[1], sec:t[0]*3600+t[1]*60,
+    h:t[0],m:t[1],type:t[2],dest:t[3]
+  }));
 }
 
-function cdInfo(dep) {
-  const d = dep - nowM();
-  // すでに発車時刻を過ぎていたら翌日扱い
-  const diff = d < 0 ? d + 24*60 : d;
-  if(diff === 0) return {t:'発車中',    c:'cd-soon'};
-  if(diff <= 1)  return {t:'まもなく',  c:'cd-soon'};
-  if(diff <= 3)  return {t:`あと ${diff} 分`, c:'cd-soon'};
-  if(diff <= 8)  return {t:`あと ${diff} 分`, c:'cd-near'};
-  return                {t:`あと ${diff} 分`, c:'cd-ok'};
+// 次の3便以降すべて返す（スクロール用）
+function getTrains(){
+  const now=nowM();
+  const flat=getFlat();
+  let i=flat.findIndex(t=>t.min>=now);
+  if(i<0)i=0;
+  return flat.slice(i).concat(flat.slice(0,i)).map((t,k)=>({...t,offset:k}));
 }
 
-function badgeCls(t){ return t==='各停'?'local':t==='通快'?'tkinkai':'rapid'; }
+// 秒単位の倒計时
+function cdSec(depSec){
+  const now=nowS();
+  let d=depSec-now;
+  if(d<0)d+=24*3600;
+  if(d===0)   return{t:'発車中',    c:'cd-s'};
+  if(d<60)    return{t:`0:${String(d).padStart(2,'0')}`,c:'cd-s'};
+  const m=Math.floor(d/60), s=d%60;
+  if(m<=3)    return{t:`${m}:${String(s).padStart(2,'0')}`,c:'cd-s'};
+  if(m<=8)    return{t:`あと ${m} 分`,c:'cd-n'};
+  return          {t:`あと ${m} 分`,c:'cd-o'};
+}
 
-// ── 描画 ───────────────────────────────────────────────────────
-function renderTrains(animate=false) {
-  const { trains, nextIdx } = getUpcoming();
-  const changed = nextIdx !== prevNextIdx;
-  prevNextIdx = nextIdx;
+function badgeCls(t){return t==='各停'?'local':t==='通快'?'tkinkai':'rapid';}
 
-  const list = document.getElementById('trainList');
+// ── 行の高さを計算してCSS変数にセット ────────────────────────
+function setRowHeight(){
+  const listEl=document.getElementById('tlist');
+  const h=listEl.clientHeight;
+  const rowH=Math.floor(h/3);
+  listEl.style.setProperty('--row-h', rowH+'px');
+}
 
-  // 3行それぞれを更新（DOMを再利用してスムーズに）
-  const existing = list.querySelectorAll('.train-row');
+// ── 全便を描画（初回 or 方向切替時のみ）─────────────────────
+let prevNextIdx=-1;
 
-  trains.forEach((t, i) => {
-    const hh = String(t.h).padStart(2,'0');
-    const mm = String(t.m).padStart(2,'0');
-    const cd = t.isNext ? cdInfo(t.min) : null;
-    const seq = t.isNext ? '次の列車' : `${i}本後`;
-
-    const html = `
+function renderAll(){
+  const trains=getTrains();
+  const list=document.getElementById('tlist');
+  list.innerHTML=trains.map((t,i)=>{
+    const hh=String(t.h).padStart(2,'0'),mm=String(t.m).padStart(2,'0');
+    const isNext=i===0;
+    const cd=cdSec(t.sec);
+    const seq=isNext?'次の列車':`${i+1}本後`;
+    return`<div class="train-row${isNext?' is-next':''}" id="row-${i}">
       <div class="badge-col">
         <span class="badge ${badgeCls(t.type)}">${t.type}</span>
         <span class="seq">${seq}</span>
@@ -411,153 +282,135 @@ function renderTrains(animate=false) {
       </div>
       <div class="time-col">
         <div class="dep-time">${hh}:${mm}</div>
-        ${cd ? `<div class="countdown ${cd.c}">${cd.t}</div>` : ''}
-      </div>`;
+        <div class="countdown ${cd.c}" id="cd-${i}">${cd.t}</div>
+      </div>
+    </div>`;
+  }).join('');
+  // 先頭行へスクロール
+  list.scrollTop=0;
+  prevNextIdx=0;
+}
 
-    if(existing[i]) {
-      existing[i].className = 'train-row' + (t.isNext?' is-next':'') + (changed&&animate?' entering':'');
-      existing[i].innerHTML = html;
-    } else {
-      const row = document.createElement('div');
-      row.className = 'train-row' + (t.isNext?' is-next':'') + (animate?' entering':'');
-      row.innerHTML = html;
-      list.appendChild(row);
+// ── 毎秒: カウントダウンのみ更新（DOM再生成なし）────────────
+let lastMin=-1;
+
+function tickSecond(){
+  const now=nowM();
+
+  // 分が変わったら → 次の列車が変わる可能性 → 全再描画
+  if(now!==lastMin){
+    lastMin=now;
+    const trains=getTrains();
+    // 次の列車インデックスをチェック
+    const list=document.getElementById('tlist');
+    const rows=list.querySelectorAll('.train-row');
+    if(rows.length && trains.length){
+      // is-next を更新
+      rows.forEach((r,i)=>{
+        const isNext=i===0;
+        r.classList.toggle('is-next',isNext);
+        const seq=r.querySelector('.seq');
+        if(seq) seq.textContent=isNext?'次の列車':`${i+1}本後`;
+      });
+      // 1本目が発車済みになっていたら全再描画
+      const firstTrain=trains[0];
+      if(firstTrain && firstTrain.min<now){
+        renderAll();
+        return;
+      }
     }
+  }
+
+  // カウントダウンを全行更新（毎秒）
+  const trains=getTrains();
+  trains.forEach((t,i)=>{
+    const el=document.getElementById(`cd-${i}`);
+    if(!el)return;
+    const cd=cdSec(t.sec);
+    el.textContent=cd.t;
+    el.className=`countdown ${cd.c}`;
   });
 }
 
-// ── 毎秒チェック ────────────────────────────────────────────────
-let lastMin = -1;
-function tick() {
-  const m = nowM();
-  if(m !== lastMin) {
-    lastMin = m;
-    renderTrains(true);  // 分が変わったら再描画（アニメ付き）
-  }
-  // 最初の行のカウントダウンだけ毎秒更新
-  updateCountdown();
+// ── 時計 ────────────────────────────────────────
+function updateClock(){
+  const n=new Date();
+  document.getElementById('chm').textContent=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
+  document.getElementById('cs').textContent=`:${String(n.getSeconds()).padStart(2,'0')}`;
+  const days=['日','月','火','水','木','金','土'];
+  document.getElementById('cdate').textContent=`${n.getFullYear()}.${String(n.getMonth()+1).padStart(2,'0')}.${String(n.getDate()).padStart(2,'0')} ${days[n.getDay()]} ${isWD()?'平日':'土休日'}`;
 }
 
-function updateCountdown() {
-  const row = document.querySelector('.train-row.is-next');
-  if(!row) return;
-  const tt = getTT();
-  const now = nowM();
-  const flat = tt.map(t=>({min:t[0]*60+t[1]}));
-  const i = flat.findIndex(t=>t.min>=now);
-  if(i<0) return;
-  const dep = flat[i].min;
-  const cd = cdInfo(dep);
-  let cdEl = row.querySelector('.countdown');
-  if(cdEl) {
-    cdEl.textContent = cd.t;
-    cdEl.className = `countdown ${cd.c}`;
-  }
+// ── テーマ ───────────────────────────────────────
+function toggleTheme(){
+  const isDark=document.documentElement.dataset.theme==='dark';
+  document.documentElement.dataset.theme=isDark?'light':'dark';
+  document.getElementById('tbtn').textContent=isDark?'🌙 夜間':'☀️ 昼間';
 }
 
-// ── テーマ ──────────────────────────────────────────────────────
-function toggleTheme() {
-  const html = document.documentElement;
-  const isDark = html.dataset.theme === 'dark';
-  html.dataset.theme = isDark ? 'light' : 'dark';
-  document.getElementById('themeBtn').textContent = isDark ? '🌙 夜間' : '☀️ 昼間';
-  document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]')
-    .setAttribute('content', isDark ? 'default' : 'black-translucent');
-}
-
-// ── 方向切替 ─────────────────────────────────────────────────────
-function setDir(d) {
-  if(dir===d) return;
-  dir=d; prevNextIdx=-1;
+// ── 方向切替 ─────────────────────────────────────
+function setDir(d){
+  if(dir===d)return;
+  dir=d; lastMin=-1;
   document.getElementById('btnUp').classList.toggle('active',d===0);
   document.getElementById('btnDown').classList.toggle('active',d===1);
-  renderTrains(true);
+  renderAll();
 }
 
-// ── 時計 ────────────────────────────────────────────────────────
-function updateClock() {
-  const n=new Date();
-  document.getElementById('chm').textContent=
-    `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
-  document.getElementById('cs').textContent=
-    `:${String(n.getSeconds()).padStart(2,'0')}`;
-  const days=['日','月','火','水','木','金','土'];
-  document.getElementById('cdate').textContent=
-    `${n.getFullYear()}.${String(n.getMonth()+1).padStart(2,'0')}.${String(n.getDate()).padStart(2,'0')} ${days[n.getDay()]} ${isWD()?'平日':'土休日'}`;
-}
-
-// ── 運行情報（複数プロキシ + タイムアウト） ──────────────────────
-const INFO_URL = 'https://service.twr.co.jp/rinkai/public/information?lang=ja';
-const PROXIES = [
-  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
-  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-  u => `https://thingproxy.freeboard.io/fetch/${u}`,
+// ── 運行情報 ─────────────────────────────────────
+const INFO_URL='https://service.twr.co.jp/rinkai/public/information?lang=ja';
+const PROXIES=[
+  u=>`https://corsproxy.io/?${encodeURIComponent(u)}`,
+  u=>`https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  u=>`https://thingproxy.freeboard.io/fetch/${u}`,
 ];
-
-async function fetchStatus() {
+async function fetchStatus(){
   const bar=document.getElementById('sbar');
   const txt=document.getElementById('stxt');
   const tim=document.getElementById('stim');
-
-  for(const mkUrl of PROXIES) {
-    try {
-      const res = await fetch(mkUrl(INFO_URL), {
-        cache:'no-store',
-        signal: AbortSignal.timeout(6000)
-      });
-      if(!res.ok) continue;
-      const html = await res.text();
-      if(!html || html.length < 100) continue;
-
-      const isNormal = html.includes('平常通り');
-      const isDelay  = ['遅れ','遅延','中止','見合わせ','運休'].some(w=>html.includes(w));
-
-      // メッセージ本文抽出
-      const tmp = document.createElement('div');
-      tmp.innerHTML = html;
-      const h1 = tmp.querySelector('h1');
-      let msg = '';
-      if(h1) {
-        let el=h1.nextElementSibling, c=0;
-        while(el && c<6) {
-          const t=el.textContent.trim().replace(/\s+/g,' ');
-          if(t.length>3 && !t.startsWith('■') && !t.includes('注意') && !/^\d{4}年/.test(t)) {
-            msg=t; break;
-          }
-          el=el.nextElementSibling; c++;
-        }
-      }
-      if(!msg) msg = isNormal ? '平常通り運転しています。' : '運行情報を確認してください';
-
-      bar.className = 'status-bar ' + (isDelay?'delay':isNormal?'ok':'idle');
-      txt.textContent = msg.slice(0,80);
+  for(const mk of PROXIES){
+    try{
+      const res=await fetch(mk(INFO_URL),{cache:'no-store',signal:AbortSignal.timeout(6000)});
+      if(!res.ok)continue;
+      const html=await res.text();
+      if(html.length<100)continue;
+      const isNormal=html.includes('平常通り');
+      const isDelay=['遅れ','遅延','中止','見合わせ','運休'].some(w=>html.includes(w));
+      const tmp=document.createElement('div');
+      tmp.innerHTML=html;
+      const h1=tmp.querySelector('h1');
+      let msg='';
+      if(h1){let el=h1.nextElementSibling,c=0;while(el&&c<6){const t=el.textContent.trim().replace(/\s+/g,' ');if(t.length>3&&!t.startsWith('■')&&!t.includes('注意')&&!/^\d{4}年/.test(t)){msg=t;break;}el=el.nextElementSibling;c++;}}
+      if(!msg)msg=isNormal?'平常通り運転しています。':'運行情報を確認してください';
+      bar.className='sbar '+(isDelay?'delay':isNormal?'ok':'idle');
+      txt.textContent=msg.slice(0,80);
       const n=new Date();
       tim.textContent=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')} 更新`;
       return;
-    } catch { continue; }
+    }catch{continue;}
   }
-
-  // 全失敗
-  bar.className='status-bar idle';
-  txt.textContent='運行情報取得エラー（ネットワーク確認 or service.twr.co.jp を直接確認）';
+  bar.className='sbar idle';
+  txt.textContent='運行情報取得エラー — service.twr.co.jp を直接確認';
   tim.textContent='';
 }
 
-// ── スワイプ ─────────────────────────────────────────────────────
+// ── スワイプ ─────────────────────────────────────
 let tx=0;
-const tl=document.getElementById('trainList');
+const tl=document.getElementById('tlist');
 tl.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
-tl.addEventListener('touchend',e=>{
-  if(Math.abs(e.changedTouches[0].clientX-tx)>60) setDir(dir===0?1:0);
-},{passive:true});
+tl.addEventListener('touchend',e=>{if(Math.abs(e.changedTouches[0].clientX-tx)>60)setDir(dir===0?1:0);},{passive:true});
 
-// ── 初期化 ───────────────────────────────────────────────────────
-renderTrains();
+// ── リサイズ対応 ──────────────────────────────────
+window.addEventListener('resize',setRowHeight);
+
+// ── 初期化 ────────────────────────────────────────
+setRowHeight();
+renderAll();
 updateClock();
 fetchStatus();
 
-setInterval(()=>{ updateClock(); tick(); }, 1000);
-setInterval(fetchStatus, 60000);
+setInterval(()=>{updateClock();tickSecond();},1000);
+setInterval(fetchStatus,60000);
 </script>
 </body>
 </html>
